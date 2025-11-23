@@ -35,7 +35,7 @@ export function MintSimulator() {
 
       // Generate simulated off-chain transaction hash
       const txHash = keccak256(toBytes(`tx-${Date.now()}-${address}`));
-      const projectId = keccak256(toBytes('zakoken-demo'));
+      const projectId = keccak256(toBytes('ZakoKen-Demo-Project'));
 
       writeContract({
         address: contractAddress,

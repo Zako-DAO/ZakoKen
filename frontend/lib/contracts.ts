@@ -61,7 +61,6 @@ export const FIXED_EXCHANGE_ABI = [
     name: 'redeem',
     inputs: [
       { name: 'zkkAmount', type: 'uint256' },
-      { name: 'recipient', type: 'address' },
     ],
     outputs: [],
     stateMutability: 'nonpayable',
