@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
-import { useAccount, useWriteContract, useReadContract } from 'wagmi';
+import { useState, useEffect, useRef } from 'react';
+import { useAccount, useWriteContract, useReadContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther, parseUnits } from 'viem';
 import { CONTRACTS, FIXED_EXCHANGE_ABI, ZKK_ABI, MOCK_USDC_ABI } from '@/lib/contracts';
 
 export function DualSwapInterface() {
   const { address, chain } = useAccount();
   const [zkkAmount, setZkkAmount] = useState('10');
+  const [step, setStep] = useState<'idle' | 'approving' | 'redeeming'>('idle');
+  const hasTriggeredRedeem = useRef(false);
 
   const isSepolia = chain?.id === 11155111;
   const zkkContract = isSepolia ? CONTRACTS.sepolia.ZKK : CONTRACTS.baseSepolia.ZKK;
@@ -27,37 +29,94 @@ export function DualSwapInterface() {
     args: zkkAmount ? [parseEther(zkkAmount)] : undefined,
   });
 
-  const { writeContract: approveZKK } = useWriteContract();
-  const { writeContract: executeRedeem } = useWriteContract();
+  const { writeContract: approveZKK, data: approveHash, error: approveError } = useWriteContract();
+  const { writeContract: executeRedeem, data: redeemHash, error: redeemError } = useWriteContract();
+
+  const { isLoading: isApproving, isSuccess: isApproved } = useWaitForTransactionReceipt({
+    hash: approveHash,
+  });
+
+  const { isLoading: isRedeeming, isSuccess: isRedeemed } = useWaitForTransactionReceipt({
+    hash: redeemHash,
+  });
+
+  // Auto-execute redeem after approval
+  useEffect(() => {
+    if (isApproved && step === 'approving' && address && zkkAmount && !hasTriggeredRedeem.current) {
+      console.log('Approval confirmed, triggering redeem...');
+      console.log('Exchange contract:', exchangeContract);
+      console.log('ZKK Amount:', zkkAmount);
+      console.log('Parsed amount:', parseEther(zkkAmount).toString());
+
+      hasTriggeredRedeem.current = true;
+      setStep('redeeming');
+
+      // Small delay to ensure state is updated
+      setTimeout(() => {
+        try {
+          executeRedeem({
+            address: exchangeContract,
+            abi: FIXED_EXCHANGE_ABI,
+            functionName: 'redeem',
+            args: [parseEther(zkkAmount)],
+          });
+          console.log('Redeem transaction submitted');
+        } catch (err) {
+          console.error('Error executing redeem:', err);
+          setStep('idle');
+          hasTriggeredRedeem.current = false;
+        }
+      }, 100);
+    }
+  }, [isApproved, step, address, zkkAmount]);
+
+  // Log errors
+  useEffect(() => {
+    if (approveError) {
+      console.error('Approve error:', approveError);
+      setStep('idle');
+      hasTriggeredRedeem.current = false;
+    }
+  }, [approveError]);
+
+  useEffect(() => {
+    if (redeemError) {
+      console.error('Redeem error:', redeemError);
+      setStep('idle');
+      hasTriggeredRedeem.current = false;
+    }
+  }, [redeemError]);
+
+  useEffect(() => {
+    if (isRedeemed) {
+      console.log('Redeem successful!');
+      setStep('idle');
+      hasTriggeredRedeem.current = false;
+    }
+  }, [isRedeemed]);
 
   const handleFixedPoolSwap = async () => {
     if (!address || !zkkAmount) return;
 
     try {
-      // First approve ZKK
+      console.log('Starting approval...');
+      hasTriggeredRedeem.current = false;
+      setStep('approving');
       approveZKK({
         address: zkkContract,
         abi: ZKK_ABI,
         functionName: 'approve',
         args: [exchangeContract, parseEther(zkkAmount)],
       });
-
-      // Then redeem (in production, wait for approval first)
-      setTimeout(() => {
-        executeRedeem({
-          address: exchangeContract,
-          abi: FIXED_EXCHANGE_ABI,
-          functionName: 'redeem',
-          args: [parseEther(zkkAmount), address],
-        });
-      }, 2000);
     } catch (error) {
       console.error('Swap error:', error);
+      setStep('idle');
+      hasTriggeredRedeem.current = false;
     }
   };
 
   const fixedPoolOutput = expectedOutput ? Number(expectedOutput) / 1e6 : 0;
-  const uniswapPoolOutput = Number(zkkAmount) * 0.99; // Simplified - dynamic fee
+  const uniswapPoolOutput = Number(zkkAmount) * 1.05; // Simplified - shows arbitrage opportunity (5% premium)
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
@@ -110,10 +169,13 @@ export function DualSwapInterface() {
 
             <button
               onClick={handleFixedPoolSwap}
-              disabled={!address}
+              disabled={!address || step !== 'idle'}
               className="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
-              Swap on Fixed Pool
+              {step === 'approving' || isApproving ? 'Approving...' :
+               step === 'redeeming' || isRedeeming ? 'Redeeming...' :
+               isRedeemed ? '✅ Redeemed!' :
+               'Swap on Fixed Pool'}
             </button>
 
             <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
@@ -159,6 +221,42 @@ export function DualSwapInterface() {
           </div>
         </div>
       </div>
+
+      {/* Transaction Status */}
+      {(approveHash || redeemHash) && (
+        <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-400 dark:border-blue-600 rounded-lg">
+          <div className="space-y-2">
+            {approveHash && (
+              <p className="text-sm text-blue-800 dark:text-blue-200">
+                {isApproving ? '⏳ Approving ZKK...' : '✅ Approval confirmed'}
+                {' '}
+                <a
+                  href={`https://sepolia.etherscan.io/tx/${approveHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-blue-600"
+                >
+                  View tx
+                </a>
+              </p>
+            )}
+            {redeemHash && (
+              <p className="text-sm text-blue-800 dark:text-blue-200">
+                {isRedeeming ? '⏳ Redeeming ZKK for USDC...' : '✅ Redemption successful!'}
+                {' '}
+                <a
+                  href={`https://sepolia.etherscan.io/tx/${redeemHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-blue-600"
+                >
+                  View tx
+                </a>
+              </p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Price Differential Indicator */}
       {Math.abs(fixedPoolOutput - uniswapPoolOutput) > 0.05 && (
