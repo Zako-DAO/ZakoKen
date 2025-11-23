@@ -55,12 +55,14 @@ zakoken/
 │   ├── ZKK.test.ts           # ZKK token tests
 │   ├── FixedExchange.test.ts
 │   └── UniswapHook.test.ts
-├── frontend/                  # React application
-│   ├── src/
-│   │   ├── components/       # UI components
-│   │   ├── hooks/            # Custom React hooks
-│   │   ├── utils/            # Utilities
-│   │   └── App.tsx           # Main app
+├── frontend/                  # Next.js application
+│   ├── app/                  # Next.js app directory
+│   │   ├── page.tsx          # Main page
+│   │   ├── layout.tsx        # Root layout
+│   │   └── providers.tsx     # Client providers
+│   ├── components/           # UI components
+│   ├── hooks/                # Custom React hooks
+│   ├── lib/                  # Utilities
 │   ├── public/
 │   └── package.json
 ├── docs/                      # Documentation
@@ -121,8 +123,8 @@ USDC_SEPOLIA=0x...  # Deploy or use existing
 USDC_BASE_SEPOLIA=0x...  # Deploy or use existing
 
 # Frontend (for development)
-VITE_WALLET_CONNECT_PROJECT_ID=your_wc_project_id
-VITE_ALCHEMY_API_KEY=your_alchemy_key
+NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=your_wc_project_id
+NEXT_PUBLIC_ALCHEMY_API_KEY=your_alchemy_key
 ```
 
 ### 1.5 Get Testnet Tokens
@@ -990,11 +992,16 @@ pnpm dev
 
 # Build for production
 pnpm build
+
+# Deploy to Vercel
+vercel deploy
 ```
+
+**Note:** This is a Next.js 14+ application using the App Router. All components use React Server Components by default unless marked with `'use client'`.
 
 ### 3.2 Key Components
 
-**File:** `frontend/src/components/WalletConnect.tsx`
+**File:** `frontend/components/WalletConnect.tsx`
 
 ```typescript
 import { ConnectButton } from '@rainbow-me/rainbowkit';
@@ -1018,9 +1025,10 @@ export function WalletConnect() {
 }
 ```
 
-**File:** `frontend/src/components/MintSimulator.tsx`
+**File:** `frontend/components/MintSimulator.tsx`
 
 ```typescript
+'use client';
 import { useState } from 'react';
 import { useContractWrite, usePrepareContractWrite } from 'wagmi';
 import { parseEther, keccak256, toBytes } from 'viem';
@@ -1100,9 +1108,10 @@ export function MintSimulator() {
 }
 ```
 
-**File:** `frontend/src/components/SwapInterface.tsx`
+**File:** `frontend/components/SwapInterface.tsx`
 
 ```typescript
+'use client';
 import { useState } from 'react';
 import { useContractWrite } from 'wagmi';
 import { parseEther, parseUnits } from 'viem';

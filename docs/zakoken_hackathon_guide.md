@@ -166,23 +166,22 @@ pnpm hardhat run scripts/initialize-pool.ts --network sepolia
 **Goal**: Basic app with wallet connection
 
 ```bash
-# 11:00-11:30 PM: Initialize frontend
+# 11:00-11:30 PM: Initialize Next.js frontend
+pnpm create next-app@latest frontend --typescript --tailwind --app --no-src-dir
 cd frontend
-pnpm create vite zakoken-frontend --template react-ts
-cd zakoken-frontend
 pnpm install
 
 # 11:30 PM-12:00 AM: Install Web3 dependencies
 pnpm add wagmi viem @rainbow-me/rainbowkit
-pnpm add -D tailwindcss postcss autoprefixer
-pnpx tailwindcss init -p
+pnpm add @tanstack/react-query
 
 # 12:00-12:30 AM: Setup RainbowKit
 # Configure wagmi with Sepolia and Base Sepolia
+# Create app/providers.tsx for client-side providers
 
 # 12:30-1:00 AM: Contract integration
-# Create contracts.ts with ABIs and addresses
-# Create useZKKContract.ts hook
+# Create lib/contracts.ts with ABIs and addresses
+# Create hooks/useZKKContract.ts hook
 ```
 
 **Deliverable**: ✅ App loads, wallet connects, can read contract data
@@ -224,11 +223,17 @@ pnpx tailwindcss init -p
 
 **4:30-5:00 AM: Deploy to Vercel**
 ```bash
+# Install Vercel CLI if needed
+pnpm add -g vercel
+
+# Build and deploy
 pnpm build
 vercel --prod
+
+# Or link to GitHub for auto-deployment
 ```
 
-**Deliverable**: ✅ Working frontend deployed online
+**Deliverable**: ✅ Working frontend deployed online (project-name.vercel.app)
 
 **🛑 CRITICAL CHECKPOINT**: By 5:00 AM, must have deployable demo!
 
@@ -341,9 +346,9 @@ ZakoKen/ (monorepo)
 │   ├── src/               # Solidity source files
 │   ├── script/            # Deployment scripts
 │   └── test/              # Contract tests
-├── frontend/              # React app (Vite + TypeScript)
-│   ├── src/
-│   │   ├── components/   # React components
+├── frontend/              # Next.js app (TypeScript)
+│   ├── app/              # Next.js app directory
+│   ├── components/       # React components
 │   │   ├── hooks/        # Custom hooks
 │   │   └── utils/        # Helpers
 │   └── public/
@@ -451,10 +456,10 @@ contract ZakoKenHook is BaseHook {
 ```
 
 ### Core Components
-1. **MintSimulator** (`frontend/src/components/MintSimulator.tsx`)
-2. **DualSwapInterface** (`frontend/src/components/DualSwapInterface.tsx`)
-3. **ArbitrageDisplay** (`frontend/src/components/ArbitrageDisplay.tsx`)
-4. **CrossChainBridge** (`frontend/src/components/CrossChainBridge.tsx`) (Optional)
+1. **MintSimulator** (`frontend/components/MintSimulator.tsx`)
+2. **DualSwapInterface** (`frontend/components/DualSwapInterface.tsx`)
+3. **ArbitrageDisplay** (`frontend/components/ArbitrageDisplay.tsx`)
+4. **CrossChainBridge** (`frontend/components/CrossChainBridge.tsx`) (Optional)
 
 ---
 

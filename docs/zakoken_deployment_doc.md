@@ -71,11 +71,11 @@ USDC_BASE_SEPOLIA=0x...                        # Deploy or use existing
 PROJECT_TREASURY=0x...                          # Treasury wallet address
 PROJECT_ID=0x...                                # keccak256("zakoken-demo")
 
-# Frontend (for production build)
-VITE_WALLET_CONNECT_PROJECT_ID=YOUR_WC_ID
-VITE_ALCHEMY_API_KEY=YOUR_KEY
-VITE_ZKK_ADDRESS_SEPOLIA=                      # Fill after deployment
-VITE_FIXED_EXCHANGE_SEPOLIA=                   # Fill after deployment
+# Frontend (for production build - Next.js)
+NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=YOUR_WC_ID
+NEXT_PUBLIC_ALCHEMY_API_KEY=YOUR_KEY
+NEXT_PUBLIC_ZKK_ADDRESS_SEPOLIA=               # Fill after deployment
+NEXT_PUBLIC_FIXED_EXCHANGE_SEPOLIA=            # Fill after deployment
 ```
 
 ### 1.3 Code Preparation
@@ -634,7 +634,7 @@ cast send $USDC_SEPOLIA \
 
 ### 5.1 Update Configuration
 
-**File:** `frontend/src/utils/contracts.ts`
+**File:** `frontend/lib/contracts.ts`
 
 ```typescript
 export const CONTRACTS = {
@@ -668,24 +668,29 @@ cd frontend
 # Install dependencies
 pnpm install
 
-# Build for production
-pnpm build
+# Set environment variables in Vercel dashboard or .env.local
+# NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID
+# NEXT_PUBLIC_ALCHEMY_API_KEY
+# NEXT_PUBLIC_ZKK_ADDRESS_SEPOLIA
+# NEXT_PUBLIC_FIXED_EXCHANGE_SEPOLIA
 
-# Deploy to Vercel
+# Test build locally
+pnpm build
+pnpm start
+
+# Deploy to Vercel (recommended for Next.js)
 vercel --prod
 
-# Or deploy to GitHub Pages
-# npm install -g gh-pages
-# gh-pages -d dist
-
-# Or use Netlify/other hosting
+# Or link to GitHub for auto-deployment
+vercel link
+git push origin main  # Auto-deploys on push
 ```
 
 ### 5.3 Configure Domain
 
-- **Vercel:** Custom domain settings in dashboard
-- **GitHub Pages:** Set up custom domain in repository settings
-- **Alternative:** Use testnet.zakoken.app for demo
+- **Vercel:** Custom domain settings in dashboard (Settings → Domains)
+- **Automatic HTTPS:** Enabled by default on Vercel
+- **Alternative:** Use project-name.vercel.app for demo
 
 ---
 

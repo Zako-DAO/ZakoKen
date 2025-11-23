@@ -600,12 +600,13 @@ Source Chain                 LayerZero             Destination Chain
 
 ### 9.2 Frontend Application
 
-✅ **React + TypeScript Web App**
+✅ **Next.js + TypeScript Web App**
 - Wallet connection (RainbowKit)
 - Mint simulator interface
 - Dual swap interface (Fixed + Uniswap)
 - Real-time price monitoring
 - Transaction history display
+- Deployed on Vercel
 
 ### 9.3 Documentation
 
@@ -636,12 +637,12 @@ Source Chain                 LayerZero             Destination Chain
 
 ### 10.2 Frontend
 
-- **Framework:** React 18 + TypeScript
+- **Framework:** Next.js 14+ (App Router) + TypeScript
 - **Web3:** ethers.js v6 / viem
 - **Wallet:** RainbowKit + wagmi
 - **UI:** TailwindCSS + shadcn/ui
-- **State:** Zustand / React Context
-- **Charts:** Recharts / Chart.js
+- **State:** React Context / Zustand
+- **Deployment:** Vercel
 
 ### 10.3 Development Tools
 
