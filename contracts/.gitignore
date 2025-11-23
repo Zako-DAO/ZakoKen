@@ -19,6 +19,22 @@
 # Hardhat coverage reports
 /coverage
 
+# Foundry
+/out
+/cache_forge
+/broadcast
+*.log
+
 # Environment variables
 .env
 .env.local
+.env.*.local
+*.bak
+*.bak2
+*.tmp
+
+# Deployment records (may contain sensitive info)
+/deployments/*.json
+
+# Foundry scripts output
+/script/*.json
