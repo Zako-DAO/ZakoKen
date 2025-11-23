@@ -1,12 +1,17 @@
-// Contract addresses (fill after deployment)
+/**
+ * Deployed Contract Addresses
+ * Last updated: November 23, 2025
+ * See docs/zakoken_deployment_summary.md for full deployment details
+ */
 export const CONTRACTS = {
   sepolia: {
-    ZKK: process.env.NEXT_PUBLIC_ZKK_ADDRESS_SEPOLIA as `0x${string}` || '0x0000000000000000000000000000000000000000',
-    FIXED_EXCHANGE: process.env.NEXT_PUBLIC_FIXED_EXCHANGE_SEPOLIA as `0x${string}` || '0x0000000000000000000000000000000000000000',
-    MOCK_USDC: process.env.NEXT_PUBLIC_MOCK_USDC_SEPOLIA as `0x${string}` || '0x0000000000000000000000000000000000000000',
+    ZKK: (process.env.NEXT_PUBLIC_ZKK_ADDRESS_SEPOLIA || '0x7462f4984a1551ACeE53ecAF3E2CCC6ffd6Ae4e1') as `0x${string}`,
+    FIXED_EXCHANGE: (process.env.NEXT_PUBLIC_FIXED_EXCHANGE_SEPOLIA || '0xE041a461F79538D6bC156F32e69aAa78D7387Cc6') as `0x${string}`,
+    MOCK_USDC: (process.env.NEXT_PUBLIC_MOCK_USDC_SEPOLIA || '0x8a6f2C4A6E72A5d1693f91CeF662E77F30ca06F2') as `0x${string}`,
   },
   baseSepolia: {
-    ZKK: process.env.NEXT_PUBLIC_ZKK_ADDRESS_BASE_SEPOLIA as `0x${string}` || '0x0000000000000000000000000000000000000000',
+    ZKK: (process.env.NEXT_PUBLIC_ZKK_ADDRESS_BASE_SEPOLIA || '0x83f0D7A6a2eC2ee0cE5DaC3Bf9c9A323d6D6b755') as `0x${string}`,
+    MOCK_USDC: (process.env.NEXT_PUBLIC_MOCK_USDC_BASE_SEPOLIA || '0x19EDeDbf11EdcF276288d7250DAE392E9F5a78Dd') as `0x${string}`,
   },
 } as const;
 
