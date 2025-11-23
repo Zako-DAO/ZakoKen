@@ -4,23 +4,32 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { MintSimulator } from '@/components/MintSimulator';
 import { DualSwapInterface } from '@/components/DualSwapInterface';
 import { ArbitrageDisplay } from '@/components/ArbitrageDisplay';
+import { WalletBalance, FaucetButton } from '@/components/WalletBalance';
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <header className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-              ZakoKen (雜魚券)
-            </h1>
-            <p className="text-gray-600 dark:text-gray-300">
-              Dynamic Fundraising Stablecoin - Hackathon Demo
-            </p>
+        <header className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                ZakoKen (雜魚券)
+              </h1>
+              <p className="text-gray-600 dark:text-gray-300">
+                Dynamic Fundraising Stablecoin - Hackathon Demo
+              </p>
+            </div>
+            <div className="flex gap-3 items-center">
+              <FaucetButton />
+              <ConnectButton />
+            </div>
           </div>
-          <div>
-            <ConnectButton />
+
+          {/* Wallet Balance Display */}
+          <div className="flex justify-end">
+            <WalletBalance />
           </div>
         </header>
 
